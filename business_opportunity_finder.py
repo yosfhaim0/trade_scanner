@@ -53,6 +53,7 @@ def _fetch_from_db(db: Database, ticker: str) -> pd.DataFrame:
 
 def _download(ticker: str) -> pd.DataFrame:
     """Download historical data for a single ticker."""
+    print(f"downlaod: {ticker} for DEFAULT_PERIOD:{DEFAULT_PERIOD} interval: {DEFAULT_INTERVAL}")
     df = yf.download(ticker, period=DEFAULT_PERIOD, interval=DEFAULT_INTERVAL, progress=False)
     if df.empty:
         raise DataUnavailableError(f"No data for {ticker}")
@@ -91,6 +92,10 @@ def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
         d_col = stoch.columns[1] if len(stoch.columns) > 1 else stoch.columns[0]
         df["STOCHk"] = stoch[k_col]
         df["STOCHd"] = stoch[d_col]
+
+        # Propagate the last valid indicator values forward to avoid ``None`` when
+        # there is insufficient data for the final row.
+    df[["RSI", "STOCHk", "STOCHd"]] = df[["RSI", "STOCHk", "STOCHd"]].ffill()
     return df
 
 
@@ -134,9 +139,13 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
 
         df = _add_indicators(df)
         indicators = df.iloc[-1]
-        rsi_val = float(indicators["RSI"])
-        stoch_k = float(indicators["STOCHk"])
-        stoch_d = float(indicators["STOCHd"])
+        try:
+            rsi_val = float(indicators["RSI"])
+            stoch_k = float(indicators["STOCHk"])
+            stoch_d = float(indicators["STOCHd"])
+        except (TypeError, ValueError):
+            # Skip this ticker if indicators could not be calculated
+            continue
 
         overbought = rsi_val >= 70 and stoch_k >= 80 and stoch_d >= 80
         oversold = rsi_val <= 30 and stoch_k <= 20 and stoch_d <= 20
