@@ -129,6 +129,7 @@ def find_opportunities(
         Skip tickers with a closing price below this value.
     max_price : float, optional
         Skip tickers with a closing price above this value.
+
     Returns
     -------
     List[Dict[str, object]]

@@ -51,3 +51,4 @@ if __name__ == "__main__":
     else:
         answer = ask_gpt_about_opportunities(ops)
         print(answer)
+
