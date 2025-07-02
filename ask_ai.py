@@ -7,6 +7,29 @@ from tabulate import tabulate
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
+def ask_gpt_for_opportunity(opportunity: Dict[str, Any]) -> str:
+    """Get a short recommendation for a single trading opportunity."""
+    ticker = opportunity.get("ticker")
+    if isinstance(ticker, dict):
+        ticker = ticker.get("ticker")
+    prompt = (
+        f"Ticker: {ticker}\n"
+        f"Price: {opportunity.get('price'):.2f}\n"
+        f"RSI: {opportunity.get('rsi'):.2f}\n"
+        f"Stoch %K: {opportunity.get('stoch_k'):.2f}\n"
+        f"Stoch %D: {opportunity.get('stoch_d'):.2f}\n"
+        f"Support: {opportunity.get('support'):.2f}\n"
+        f"Resistance: {opportunity.get('resistance'):.2f}\n\n"
+        "Based on these indicators, is this a good trade setup? Please answer in a single short paragraph."
+    )
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response["choices"][0]["message"]["content"].strip()
+
+
 def ask_gpt_about_opportunities(opportunities: List[Dict[str, Any]]) -> str:
     """Uses OpenAI ChatGPT to analyze the opportunity list and return trade suggestions."""
     table_data = []
@@ -45,10 +68,11 @@ if __name__ == "__main__":
     from business_opportunity_finder import find_opportunities
     from stock_list import load_stock_list
 
-    ops = find_opportunities(load_stock_list())
+    ops = find_opportunities(load_stock_list(), show_progress=True)
     if not ops:
         print("No opportunities found.")
     else:
-        answer = ask_gpt_about_opportunities(ops)
-        print(answer)
+        for op in ops:
+            rec = ask_gpt_for_opportunity(op)
+            print(f"{op.get('ticker')}: {rec}\n")
 
