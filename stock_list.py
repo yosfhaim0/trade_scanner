@@ -4,7 +4,7 @@ from typing import List, Dict
 
 import yfinance as yf
 
-STOCKS_FILE = "10_stock_list"
+STOCKS_FILE = "stock_list"
 
 
 def _fetch_tickers() -> List[str]:

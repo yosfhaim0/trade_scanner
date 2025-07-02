@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from typing import List, Dict
 
+from database import Database
+
 import pandas as pd
 import yfinance as yf
+
+from stock_list import load_stock_list
 
 try:
     import pandas_ta as ta  # type: ignore
@@ -19,6 +23,7 @@ RSI_PERIOD = 14
 STOCH_K = 14
 STOCH_D = 3
 LOOKBACK_SUPPORT = 20
+MIN_DB_ROWS = 60
 
 
 class DataUnavailableError(Exception):
@@ -26,6 +31,25 @@ class DataUnavailableError(Exception):
 
 
 # Helper functions
+
+def _fetch_from_db(db: Database, ticker: str) -> pd.DataFrame:
+    """Load historical data for ``ticker`` from the database."""
+    df = db.fetch_ticker(ticker)
+    if df.empty:
+        return df
+    df = df.rename(
+        columns={
+            "datetime": "Date",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "volume": "Volume",
+        }
+    )
+    df["Date"] = pd.to_datetime(df["Date"])
+    df.set_index("Date", inplace=True)
+    return df
 
 def _download(ticker: str) -> pd.DataFrame:
     """Download historical data for a single ticker."""
@@ -36,6 +60,20 @@ def _download(ticker: str) -> pd.DataFrame:
     return df
 
 
+def _get_data(db: Database, ticker: str) -> pd.DataFrame:
+    """Retrieve data from the DB or download if missing."""
+    ticker=ticker['ticker']
+    df = _fetch_from_db(db, ticker)
+    if len(df) >= MIN_DB_ROWS:
+        return df
+
+    df = _download(ticker)
+    df_to_store = df.reset_index()
+    df_to_store["Ticker"] = ticker
+    db.insert_dataframe(df_to_store)
+    return df
+
+
 def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """Add RSI and Stochastic indicators."""
     if ta is None:
@@ -43,6 +81,7 @@ def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
     df["RSI"] = ta.rsi(df["Close"], length=RSI_PERIOD)
+    df = df[~df.index.duplicated(keep='last')]  # remove duplicated timestamps
     stoch = ta.stoch(df["High"], df["Low"], df["Close"], k=STOCH_K, d=STOCH_D)
     df["STOCHk"] = stoch[f"STOCHk_{STOCH_K}_{STOCH_D}_{STOCH_D}"]
     df["STOCHd"] = stoch[f"STOCHd_{STOCH_K}_{STOCH_D}_{STOCH_D}"]
@@ -78,13 +117,14 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
     if mode not in {"overbought", "oversold", "both"}:
         raise ValueError("mode must be 'overbought', 'oversold', or 'both'")
 
+    db = Database()
     results: List[Dict[str, object]] = []
 
     for ticker in tickers:
-        try:
-            df = _download(ticker)
-        except DataUnavailableError:
-            continue
+
+
+        df = _get_data(db, ticker)
+
 
         df = _add_indicators(df)
         indicators = df.iloc[-1]
@@ -120,5 +160,31 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
             }
         )
 
+    db.close()
     return results
 
+
+if __name__ == '__main__':
+    from tabulate import tabulate
+
+    l = load_stock_list()
+    results = find_opportunities(l)
+
+    if not results:
+        print("No opportunities found.")
+    else:
+        display_table = []
+        for row in results:
+            icon = "🔼" if row["status"] == "overbought" else "🔽"
+            display_table.append([
+                row["ticker"]['ticker'],
+                f'{row["rsi"]:.2f}',
+                f'{row["stoch_k"]:.2f}',
+                f'{row["stoch_d"]:.2f}',
+                f'{icon} {row["status"].capitalize()}',
+                f'{row["support"]:.2f}',
+                f'{row["resistance"]:.2f}',
+            ])
+
+        headers = ["Ticker", "RSI", "Stoch %K", "Stoch %D", "Status", "Support", "Resistance"]
+        print(tabulate(display_table, headers=headers, tablefmt="fancy_grid"))
