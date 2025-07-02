@@ -4,7 +4,9 @@ from typing import List, Dict, Any
 import openai
 from tabulate import tabulate
 
-openai.api_key = os.getenv("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")
+import secret
+
+openai.api_key = os.getenv(secret.secret)
 
 
 def ask_gpt_about_opportunities(opportunities: List[Dict[str, Any]]) -> str:
