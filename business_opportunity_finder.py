@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import List, Dict
 
+from database import Database
+
 import pandas as pd
 import yfinance as yf
 
@@ -19,6 +21,7 @@ RSI_PERIOD = 14
 STOCH_K = 14
 STOCH_D = 3
 LOOKBACK_SUPPORT = 20
+MIN_DB_ROWS = 60
 
 
 class DataUnavailableError(Exception):
@@ -27,12 +30,44 @@ class DataUnavailableError(Exception):
 
 # Helper functions
 
+def _fetch_from_db(db: Database, ticker: str) -> pd.DataFrame:
+    """Load historical data for ``ticker`` from the database."""
+    df = db.fetch_ticker(ticker)
+    if df.empty:
+        return df
+    df = df.rename(
+        columns={
+            "datetime": "Date",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "volume": "Volume",
+        }
+    )
+    df["Date"] = pd.to_datetime(df["Date"])
+    df.set_index("Date", inplace=True)
+    return df
+
 def _download(ticker: str) -> pd.DataFrame:
     """Download historical data for a single ticker."""
     df = yf.download(ticker, period=DEFAULT_PERIOD, interval=DEFAULT_INTERVAL, progress=False)
     if df.empty:
         raise DataUnavailableError(f"No data for {ticker}")
     df.index.name = "Date"
+    return df
+
+
+def _get_data(db: Database, ticker: str) -> pd.DataFrame:
+    """Retrieve data from the DB or download if missing."""
+    df = _fetch_from_db(db, ticker)
+    if len(df) >= MIN_DB_ROWS:
+        return df
+
+    df = _download(ticker)
+    df_to_store = df.reset_index()
+    df_to_store["Ticker"] = ticker
+    db.insert_dataframe(df_to_store)
     return df
 
 
@@ -78,11 +113,12 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
     if mode not in {"overbought", "oversold", "both"}:
         raise ValueError("mode must be 'overbought', 'oversold', or 'both'")
 
+    db = Database()
     results: List[Dict[str, object]] = []
 
     for ticker in tickers:
         try:
-            df = _download(ticker)
+            df = _get_data(db, ticker)
         except DataUnavailableError:
             continue
 
@@ -120,5 +156,6 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
             }
         )
 
+    db.close()
     return results
 
