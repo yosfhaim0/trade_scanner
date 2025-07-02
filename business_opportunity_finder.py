@@ -81,10 +81,16 @@ def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
     df["RSI"] = ta.rsi(df["Close"], length=RSI_PERIOD)
-    df = df[~df.index.duplicated(keep='last')]  # remove duplicated timestamps
+    df = df[~df.index.duplicated(keep="last")]  # remove duplicated timestamps
     stoch = ta.stoch(df["High"], df["Low"], df["Close"], k=STOCH_K, d=STOCH_D)
-    df["STOCHk"] = stoch[f"STOCHk_{STOCH_K}_{STOCH_D}_{STOCH_D}"]
-    df["STOCHd"] = stoch[f"STOCHd_{STOCH_K}_{STOCH_D}_{STOCH_D}"]
+    if stoch is None or stoch.empty:
+        df["STOCHk"] = pd.NA
+        df["STOCHd"] = pd.NA
+    else:
+        k_col = stoch.columns[0]
+        d_col = stoch.columns[1] if len(stoch.columns) > 1 else stoch.columns[0]
+        df["STOCHk"] = stoch[k_col]
+        df["STOCHd"] = stoch[d_col]
     return df
 
 
