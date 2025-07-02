@@ -4,7 +4,7 @@ from typing import List, Dict
 
 import yfinance as yf
 
-STOCKS_FILE = "stocks.json"
+STOCKS_FILE = "10_stock_list"
 
 
 def _fetch_tickers() -> List[str]:
@@ -58,13 +58,36 @@ def build_stock_list(path: str = STOCKS_FILE) -> List[Dict]:
     return stocks
 
 
+def load_tickers_from_txt(filepath):
+    """
+    Loads tickers from a .txt file, one per line.
+
+    Args:
+        filepath (str): Path to the .txt file
+
+    Returns:
+        List[Dict]: A list of ticker symbols
+    """
+    tickers = []
+    with open(filepath, "r") as file:
+        for line in file:
+            symbol = line.strip()
+            if symbol:  # ignore empty lines
+                tickers.append({
+    "ticker": symbol,
+    "sector": "",
+    "has_options": True
+  })
+    return tickers
+
 def load_stock_list(path: str = STOCKS_FILE) -> List[Dict]:
     """Load cached stock list; build it if missing."""
-    p = Path(path)
-    if p.exists():
-        try:
-            with p.open() as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return build_stock_list(path)
+    # p = Path(path)
+    # if p.exists():
+    #     try:
+    #         with p.open() as f:
+    #             return json.load(f)
+    #     except Exception:
+    #         pass
+    return load_tickers_from_txt(path)
+    # return build_stock_list(path)

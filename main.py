@@ -3,7 +3,7 @@ from scanner import Scanner
 
 def main():
     scanner = Scanner()
-    results = scanner.scan(sector="Consumer Cyclical", options_only=True, limit=50)
+    results = scanner.scan(options_only=True, limit=50)
     for res in results:
         print(
             f"{res['ticker']}: price={res['price']:.2f} RSI14={res['RSI14']:.2f} "
