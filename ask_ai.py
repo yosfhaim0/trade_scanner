@@ -6,7 +6,7 @@ from tabulate import tabulate
 
 import secret
 
-openai.api_key = os.getenv(secret.secret)
+openai.api_key = secret.secret
 
 
 def ask_gpt_for_opportunity(opportunity: Dict[str, Any]) -> str:
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     from business_opportunity_finder import find_opportunities
     from stock_list import load_stock_list
 
-    ops = find_opportunities(load_stock_list(), show_progress=True)
+    ops = find_opportunities(load_stock_list()[:20], show_progress=True)
     if not ops:
         print("No opportunities found.")
     else:

@@ -223,7 +223,7 @@ if __name__ == '__main__':
     from tabulate import tabulate
 
     l = load_stock_list()
-    results = find_opportunities(l, show_progress=True)
+    results = find_opportunities(l[:20], show_progress=True)
 
     if not results:
         print("No opportunities found.")
@@ -233,6 +233,7 @@ if __name__ == '__main__':
             icon = "🔼" if row["status"] == "overbought" else "🔽"
             display_table.append([
                 row["ticker"]['ticker'],
+                f'{row["price"]:.2f}',
                 f'{row["rsi"]:.2f}',
                 f'{row["stoch_k"]:.2f}',
                 f'{row["stoch_d"]:.2f}',
@@ -241,5 +242,5 @@ if __name__ == '__main__':
                 f'{row["resistance"]:.2f}',
             ])
 
-        headers = ["Ticker", "RSI", "Stoch %K", "Stoch %D", "Status", "Support", "Resistance"]
+        headers = ["Ticker",'Price', "RSI", "Stoch %K", "Stoch %D", "Status", "Support", "Resistance"]
         print(tabulate(display_table, headers=headers, tablefmt="fancy_grid"))
