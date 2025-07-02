@@ -108,7 +108,13 @@ def _support_resistance(df: pd.DataFrame, lookback: int = LOOKBACK_SUPPORT) -> D
 
 # Public API
 
-def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str, object]]:
+def find_opportunities(
+    tickers: List[str],
+    mode: str = "both",
+    min_volume: int = 0,
+    min_price: float = 0.0,
+    max_price: float = float("inf"),
+) -> List[Dict[str, object]]:
     """Scan tickers for overbought or oversold conditions.
 
     Parameters
@@ -117,6 +123,12 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
         Symbols to scan.
     mode : str, optional
         'overbought', 'oversold', or 'both'. Defaults to 'both'.
+    min_volume : int, optional
+        Skip tickers with volume below this value.
+    min_price : float, optional
+        Skip tickers with a closing price below this value.
+    max_price : float, optional
+        Skip tickers with a closing price above this value.
 
     Returns
     -------
@@ -138,7 +150,18 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
 
 
         df = _add_indicators(df)
-        indicators = df.iloc[-1]
+        last_row = df.iloc[-1]
+
+        try:
+            volume_val = float(last_row["Volume"])
+            price_val = float(last_row["Close"])
+        except (KeyError, TypeError, ValueError):
+            continue
+
+        if volume_val < min_volume or price_val < min_price or price_val > max_price:
+            continue
+
+        indicators = last_row
         try:
             rsi_val = float(indicators["RSI"])
             stoch_k = float(indicators["STOCHk"])
@@ -166,6 +189,7 @@ def find_opportunities(tickers: List[str], mode: str = "both") -> List[Dict[str,
         results.append(
             {
                 "ticker": ticker,
+                "price": price_val,
                 "rsi": rsi_val,
                 "stoch_k": stoch_k,
                 "stoch_d": stoch_d,
