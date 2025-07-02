@@ -1,16 +1,20 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from scanner import Scanner
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def main():
+    # Example watchlist
+    tickers = ["AAPL", "MSFT", "GOOGL"]
+    scanner = Scanner(tickers)
+    scanner.update_data()
+    results = scanner.scan()
+    for res in results:
+        print(
+            f"{res['ticker']}: price={res['price']:.2f} RSI14={res['RSI14']:.2f} "
+            f"support={res['support']:.2f} resistance={res['resistance']:.2f} "
+            f"near_support={res['near_support']} near_resistance={res['near_resistance']}"
+        )
+    scanner.close()
 
-# my name is yosfe
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()
