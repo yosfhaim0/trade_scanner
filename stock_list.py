@@ -2,10 +2,7 @@ import json
 from pathlib import Path
 from typing import List, Dict
 
-try:
-    import yfinance as yf
-except ImportError:  # pragma: no cover - yfinance may not be installed in tests
-    yf = None
+import yfinance as yf
 
 STOCKS_FILE = "stocks.json"
 
@@ -27,10 +24,7 @@ def _fetch_tickers() -> List[str]:
     ]:
         func = getattr(yf, func_name, None)
         if callable(func):
-            try:
-                tickers.extend(func())
-            except Exception:
-                pass
+            tickers.extend(func())
     return sorted(set(tickers))
 
 
