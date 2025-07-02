@@ -1,0 +1,252 @@
+[
+  {
+    "ticker": "AAPL",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "MSFT",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "GOOGL",
+    "sector": "Communication Services",
+    "has_options": true
+  },
+  {
+    "ticker": "AMZN",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "NVDA",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "META",
+    "sector": "Communication Services",
+    "has_options": true
+  },
+  {
+    "ticker": "TSLA",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "JPM",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "V",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "UNH",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "JNJ",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "XOM",
+    "sector": "Energy",
+    "has_options": true
+  },
+  {
+    "ticker": "WMT",
+    "sector": "Consumer Defensive",
+    "has_options": true
+  },
+  {
+    "ticker": "PG",
+    "sector": "Consumer Defensive",
+    "has_options": true
+  },
+  {
+    "ticker": "MA",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "CVX",
+    "sector": "Energy",
+    "has_options": true
+  },
+  {
+    "ticker": "HD",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "LLY",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "KO",
+    "sector": "Consumer Defensive",
+    "has_options": true
+  },
+  {
+    "ticker": "MRK",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "PEP",
+    "sector": "Consumer Defensive",
+    "has_options": true
+  },
+  {
+    "ticker": "ABBV",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "AVGO",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "BAC",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "ADBE",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "COST",
+    "sector": "Consumer Defensive",
+    "has_options": true
+  },
+  {
+    "ticker": "TMO",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "NFLX",
+    "sector": "Communication Services",
+    "has_options": true
+  },
+  {
+    "ticker": "INTC",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "CRM",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "WFC",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "AMD",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "PFE",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "ABT",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "ACN",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "QCOM",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "VZ",
+    "sector": "Communication Services",
+    "has_options": true
+  },
+  {
+    "ticker": "DHR",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "TXN",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "MCD",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "NEE",
+    "sector": "Utilities",
+    "has_options": true
+  },
+  {
+    "ticker": "NKE",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "BMY",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "LIN",
+    "sector": "Basic Materials",
+    "has_options": true
+  },
+  {
+    "ticker": "HON",
+    "sector": "Industrials",
+    "has_options": true
+  },
+  {
+    "ticker": "AMGN",
+    "sector": "Healthcare",
+    "has_options": true
+  },
+  {
+    "ticker": "IBM",
+    "sector": "Technology",
+    "has_options": true
+  },
+  {
+    "ticker": "LOW",
+    "sector": "Consumer Cyclical",
+    "has_options": true
+  },
+  {
+    "ticker": "MS",
+    "sector": "Financial Services",
+    "has_options": true
+  },
+  {
+    "ticker": "RTX",
+    "sector": "Industrials",
+    "has_options": true
+  }
+]
