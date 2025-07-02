@@ -2,11 +2,8 @@ from scanner import Scanner
 
 
 def main():
-    # Example watchlist
-    tickers = ["AAPL", "MSFT", "GOOGL"]
-    scanner = Scanner(tickers)
-    scanner.update_data()
-    results = scanner.scan()
+    scanner = Scanner()
+    results = scanner.scan(sector="Technology", options_only=True, limit=50)
     for res in results:
         print(
             f"{res['ticker']}: price={res['price']:.2f} RSI14={res['RSI14']:.2f} "
