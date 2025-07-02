@@ -1,17 +1,20 @@
-from scanner import Scanner
+from business_opportunity_finder import find_opportunities
+from stock_list import load_stock_list
+from ask_ai import ask_gpt_for_opportunity
 
 
 def main():
-    scanner = Scanner()
-    results = scanner.scan(options_only=True, limit=50)
-    for res in results:
-        print(
-            f"{res['ticker']}: price={res['price']:.2f} RSI14={res['RSI14']:.2f} "
-            f"support={res['support']:.2f} resistance={res['resistance']:.2f} "
-            f"near_support={res['near_support']} near_resistance={res['near_resistance']}"
-        )
-    scanner.close()
+    tickers = load_stock_list()[:50]
+    opportunities = find_opportunities(tickers, show_progress=True)
+    if not opportunities:
+        print("No opportunities found.")
+        return
+
+    for op in opportunities:
+        rec = ask_gpt_for_opportunity(op)
+        print(f"{op.get('ticker')}: {rec}\n")
 
 
 if __name__ == "__main__":
     main()
+

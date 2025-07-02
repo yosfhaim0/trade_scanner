@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import List, Dict
+import sys
 
 from database import Database
 
@@ -28,6 +29,15 @@ MIN_DB_ROWS = 60
 
 class DataUnavailableError(Exception):
     """Raised when no data could be retrieved for a ticker."""
+
+
+def _display_progress(current: int, total: int) -> None:
+    """Simple progress bar printing percentage of completion."""
+    percent = int((current / total) * 100)
+    msg = f"Scanning tickers: {current}/{total} ({percent}%)"
+    print(f"\r{msg}", end="", file=sys.stdout, flush=True)
+    if current == total:
+        print(file=sys.stdout)
 
 
 # Helper functions
@@ -114,6 +124,7 @@ def find_opportunities(
     min_volume: int = 0,
     min_price: float = 0.0,
     max_price: float = float("inf"),
+    show_progress: bool = False,
 ) -> List[Dict[str, object]]:
     """Scan tickers for overbought or oversold conditions.
 
@@ -129,6 +140,8 @@ def find_opportunities(
         Skip tickers with a closing price below this value.
     max_price : float, optional
         Skip tickers with a closing price above this value.
+    show_progress : bool, optional
+        Display a progress indicator while scanning.
 
     Returns
     -------
@@ -143,7 +156,10 @@ def find_opportunities(
     db = Database()
     results: List[Dict[str, object]] = []
 
-    for ticker in tickers:
+    total = len(tickers)
+    for idx, ticker in enumerate(tickers, start=1):
+        if show_progress:
+            _display_progress(idx, total)
 
 
         df = _get_data(db, ticker)
@@ -207,7 +223,7 @@ if __name__ == '__main__':
     from tabulate import tabulate
 
     l = load_stock_list()
-    results = find_opportunities(l)
+    results = find_opportunities(l, show_progress=True)
 
     if not results:
         print("No opportunities found.")
